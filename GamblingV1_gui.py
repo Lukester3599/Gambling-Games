@@ -25,14 +25,14 @@ class GamblingGame(tk.Tk):
         self.bet_label.pack()
         self.bet_entry = tk.Entry(self)
         self.bet_entry.pack()
-        self.bet_entry.bind('<Return>', lambda event: self.place_bet())  # Allow Enter key for bet
+        self.bet_entry.bind('<Return>', self.on_bet_entry_return)  # Dedicated handler for Enter key
         self.bet_button = tk.Button(self, text="Place Bet", command=self.place_bet)
         self.bet_button.pack(pady=5)
 
         # Entry and button for making a guess (hidden until bet is placed)
         self.guess_label = tk.Label(self, text="Your guess (1-10):")
         self.guess_entry = tk.Entry(self)
-        self.guess_entry.bind('<Return>', lambda event: self.make_guess())  # Allow Enter key for guess
+        self.guess_entry.bind('<Return>', self.on_guess_entry_return)  # Dedicated handler for Enter key
         self.guess_button = tk.Button(self, text="Guess", command=self.make_guess)
         self.guess_label.pack_forget()
         self.guess_entry.pack_forget()
@@ -125,6 +125,19 @@ class GamblingGame(tk.Tk):
             self.result_label.config(text="You have run out of money. Game over!")
             self.bet_button.config(state=tk.DISABLED)
         self.animation_label.config(text="")
+        self.bet_entry.focus_set()  # Focus back to bet entry after result
+
+    def on_bet_entry_return(self, event):
+        # Only trigger place_bet if focus is on bet_entry
+        if event.widget == self.bet_entry:
+            self.place_bet()
+            return "break"  # Prevent further propagation
+
+    def on_guess_entry_return(self, event):
+        # Only trigger make_guess if focus is on guess_entry
+        if event.widget == self.guess_entry:
+            self.make_guess()
+            return "break"  # Prevent further propagation
 
 # Start the game if this file is run directly
 if __name__ == "__main__":
